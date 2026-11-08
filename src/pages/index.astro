@@ -499,6 +499,77 @@
 </section>
 
 
+<!-- POSTER LIGHTBOX -->
+<div class="poster-lightbox" id="posterLightbox" aria-hidden="true">
+  <button
+    class="poster-lightbox-close"
+    id="posterLightboxClose"
+    aria-label="Close poster preview"
+    type="button"
+  >
+    &times;
+  </button>
+
+  <img id="posterLightboxImage" src="" alt="Poster preview" />
+</div>
+
+<script>
+  const posterImages = document.querySelectorAll<HTMLImageElement>(".film-poster img");
+const lightbox = document.getElementById("posterLightbox") as HTMLDivElement;
+const lightboxImage = document.getElementById("posterLightboxImage") as HTMLImageElement;
+const closeButton = document.getElementById("posterLightboxClose") as HTMLButtonElement;
+
+  function openPoster(image: HTMLImageElement) {
+    lightboxImage.src = image.src;
+    lightboxImage.alt = image.alt;
+
+    lightbox.classList.add("active");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+
+    closeButton.focus();
+  }
+
+  function closePoster() {
+    lightbox.classList.remove("active");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+
+    lightboxImage.src = "";
+  }
+
+ posterImages.forEach((image: HTMLImageElement) => {
+  const poster = image.parentElement as HTMLElement;
+
+  poster.setAttribute("tabindex", "0");
+  poster.setAttribute("role", "button");
+  poster.setAttribute("aria-label", "Preview " + image.alt);
+
+  poster.addEventListener("click", () => openPoster(image));
+
+  poster.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openPoster(image);
+    }
+  });
+});
+
+  closeButton.addEventListener("click", closePoster);
+
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) {
+      closePoster();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && lightbox.classList.contains("active")) {
+      closePoster();
+    }
+  });
+</script>
+
 
       <!-- EXPERIENCE -->
       <section class="section experience-section" id="experience">
@@ -1858,6 +1929,95 @@
 
   .press-content h3 {
     font-size: 20px;
+  }
+}
+
+/* FILM POSTER PREVIEW */
+
+.film-poster {
+  overflow: hidden;
+  cursor: zoom-in;
+  position: relative;
+}
+
+.film-poster img {
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.film-poster:hover img {
+  transform: scale(1.06);
+  filter: brightness(1.08);
+}
+
+/* LIGHTBOX OVERLAY */
+
+.poster-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.94);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  cursor: zoom-out;
+}
+
+.poster-lightbox.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.poster-lightbox img {
+  display: block;
+  max-width: min(90vw, 650px);
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+  transform: scale(0.94);
+  transition: transform 0.3s ease;
+  cursor: default;
+}
+
+.poster-lightbox.active img {
+  transform: scale(1);
+}
+
+.poster-lightbox-close {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.poster-lightbox-close:hover {
+  color: #aaa;
+}
+
+@media (max-width: 650px) {
+  .poster-lightbox {
+    padding: 20px;
+  }
+
+  .poster-lightbox img {
+    max-width: 92vw;
+    max-height: 80vh;
+  }
+
+  .poster-lightbox-close {
+    top: 12px;
+    right: 15px;
   }
 }
 
